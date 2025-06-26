@@ -1,0 +1,36 @@
+body {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+#videos {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+video {
+    width: 300px;
+    background: #000;
+}
+
+input {
+    padding: 5px;
+    margin: 5px;
+}
+
+button {
+    padding: 5px 10px;
+}
+
+.hidden { display: none; }
+#incoming-call {
+  position: fixed;
+  top: 40%;
+  left: 50%;
+  background: #eee;
+  padding: 20px;
+  border: 1px solid #aaa;
+  transform: translate(-50%, -50%);
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🙃</text></svg>"></link>
+  <title>PeerJS Video Chat</title>
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="./libs/peerjs.min.js"></script>
+  
+</head>
+
+<body>
+  <h1>PeerJS Video Chat</h1>
+  <div>
+    <label>from: </label>
+    <input id="from" value="" >
+  </div>
+  <div>
+    <label>to:</label>
+    <input id="to" value="" >
+    <button id="call-btn" onclick="callPeer()">Call</button>
+  </div>
+  <div id="videos">
+    <video id="local-video" muted autoplay playsinline></video>
+    <video id="remote-video" autoplay playsinline></video>
+  </div>
+  <!-- Add this to your index.html -->
+  <div id="incoming-call" class="hidden">
+    <p>📞 Incoming call from <span id="caller-id"></span></p>
+    <button id="answer-btn" onclick="answerCall()">Answer</button>
+    <button id="decline-btn">Decline</button>
+  </div>
+<script src="main.js"></script>
+
+</body>
+
+</html>
