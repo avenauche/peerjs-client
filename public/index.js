@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     function makeAudioCall() {
-        makeCall('video')
+        makeCall('audio')
     }
 
     async function makeCall(callType) {
