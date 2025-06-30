@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     User.connect({
         from: User.from, // Use the from method to get the user's ID from the URL hash
         to: User.to, // Use the to method to get the peer ID from the URL query parameter
-        host: "127.0.0.1", // Use your LAN IP for cross-browser and Docker compatibility
+        host: "10.10.12.29", // Use your LAN IP for cross-browser and Docker compatibility
         port: 9000,
         path: "/myapp",
         secure: true,
@@ -11,8 +11,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         remoteVideoId: "remote-video"
     });
 
-    async function makeCall() {
-        const localstream = await User.getLocalstream();
+    function makeVideoCall() {
+        makeCall('video')
+    }
+
+    function makeAudioCall() {
+        makeCall('video')
+    }
+
+    async function makeCall(callType) {
+        const localstream = await User.getLocalstream(callType);
         let localId = document.getElementById("local-video");
         await User.playStream(localId, localstream);
 
@@ -62,7 +70,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     window.addEventListener("showCallNotification", showCallNotification);
-    document.getElementById('call-btn').onclick = makeCall;
+    document.getElementById('video-call-btn').onclick = makeVideoCall;
+    document.getElementById('audio-call-btn').onclick = makeAudioCall;
     document.getElementById('hangup-btn').onclick = hangupCall;
     document.getElementById('answer-btn').onclick = answerCall;
     document.getElementById('decline-btn').onclick = declineCall;

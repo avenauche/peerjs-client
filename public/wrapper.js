@@ -5,11 +5,16 @@ const User = (function () {
     let localVideoId = null;
     let remoteVideoId = null;
 
-    let from = (new URLSearchParams(window.location.search)).get('from');
-    let to = (new URLSearchParams(window.location.search)).get('to');
+    const searchParams = new URLSearchParams(window.location.search);
+    let from = searchParams.has("from") ? searchParams.get('from') : "";
+    let to = searchParams.has("to") ? searchParams.get('to') : "";
 
-    async function getLocalstream() {
-        return await Util.getLocalMedia({ video: true, audio: true })
+    async function getLocalstream(callType) {
+        let constraints = { video: true, audio: true };
+        if (callType === 'audio') {
+            constraints = { video: false, audio: true };
+        }
+        return await Util.getLocalMedia(constraints)
     }
 
     async function playStream(videoElementId, stream) {
