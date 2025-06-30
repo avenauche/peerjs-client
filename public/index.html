@@ -21,7 +21,8 @@
   <div>
     <label>to:</label>
     <input id="to" value="" >
-    <button id="call-btn" onclick="callPeer()">Call</button>
+    <button id="call-btn">Call</button>
+    <button id="hangup-btn">hangup</button>
   </div>
   <div id="videos">
     <video id="local-video" muted autoplay playsinline></video>
@@ -30,10 +31,25 @@
   <!-- Add this to your index.html -->
   <div id="incoming-call" class="hidden">
     <p>📞 Incoming call from <span id="caller-id"></span></p>
-    <button id="answer-btn" onclick="answerCall()">Answer</button>
+    <button id="answer-btn">Answer</button>
     <button id="decline-btn">Decline</button>
   </div>
-<script src="main.js"></script>
+
+
+  <input type="file" id="file-input" />
+  <button id="send-btn"> send file </button>
+  <div id="status"></div>
+  <div id="download-link"></div>
+
+  
+<!-- <script src="main.js"></script> -->
+
+<script src="util.js"></script>
+<script src="wrapper.js"></script>
+<!-- <script src="common.js"></script>
+<script src="receiver.js"></script>
+<script src="sender.js"></script> -->
+<script src="index.js"></script>
 
 </body>
 
