@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
-
+    let incomingCallType = null;
     User.connect({
         from: User.from, // Use the from method to get the user's ID from the URL hash
         to: User.to, // Use the to method to get the peer ID from the URL query parameter
@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     function showCallNotification(event) {
+        incomingCallType = event.detail.callType;
         var incomingCallDiv = document.getElementById('incoming-call');
         incomingCallDiv.classList.remove('hidden');
         incomingCallDiv.style.display = 'block';
@@ -46,25 +47,25 @@ document.addEventListener("DOMContentLoaded", async function () {
     async function answerCall() {
         hideCallNotification();
 
-        const localstream = await User.getLocalstream();
-        let localId = document.getElementById("local-video");
-        await User.playStream(localId, localstream);
-
         User.answerCall({
-            stream: await User.getLocalstream()
+            stream: await User.getLocalstream(incomingCallType)
         }, async (remoteStream) => {
+            const localstream = await User.getLocalstream(incomingCallType);
+            let localId = document.getElementById("local-video");
+            await User.playStream(localId, localstream);
+
             let remoteId = document.getElementById("remote-video");
             await User.playStream(remoteId, remoteStream);
         });
     }
 
-        
-    function declineCall(){
+
+    function declineCall() {
         hideCallNotification();
         User.declineCall();
     }
 
-    function hangupCall(){
+    function hangupCall() {
         hideCallNotification();
         User.hangupCall();
     }

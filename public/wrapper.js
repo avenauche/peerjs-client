@@ -54,6 +54,7 @@ const User = (function () {
             showIncomingCallNotification({
                 from: call.peer,
                 to: User.from,
+                callType: call.metadata.callType,
             });
         })
 
@@ -62,7 +63,7 @@ const User = (function () {
     function makeCall(to, localstream, cb) {
         var call = peer.call(to, localstream);
         currentCall = call;
-
+        currentCall.metadata = { callType: localstream.getVideoTracks().length > 0 ? 'video' : 'audio' };
         call.on('stream', function (remoteStream) {
             cb(remoteStream);
         });
