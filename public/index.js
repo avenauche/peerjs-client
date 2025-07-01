@@ -82,8 +82,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
     function sendFile() {
-        const fileInput = document.getElementById('file-input');
-        const file = fileInput.files[0];
+        const file = document.getElementById('file-input').files[0];
+
         if (file) {
             User.sendFiles(file);
         } else {
