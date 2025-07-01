@@ -70,6 +70,17 @@ document.addEventListener("DOMContentLoaded", async function () {
         User.hangupCall();
     }
 
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value.trim();
+        if (message) {
+            User.sendMessage(message);
+            messageInput.value = ''; // Clear the input field after sending
+        }
+    }
+
+
     function sendFile() {
         const fileInput = document.getElementById('file-input');
         const file = fileInput.files[0];
@@ -86,7 +97,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById('hangup-btn').onclick = hangupCall;
     document.getElementById('answer-btn').onclick = answerCall;
     document.getElementById('decline-btn').onclick = declineCall;
-    document.getElementById('send-btn').onclick = sendFile;
+    
+    
+    document.getElementById('send-message-btn').onclick = sendMessage;
+    document.getElementById('send-file-btn').onclick = sendFile;
 
 })
 
