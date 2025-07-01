@@ -70,12 +70,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         User.hangupCall();
     }
 
+
+    function sendMessage() {
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value.trim();
+        if (message) {
+            User.sendMessage(message);
+            messageInput.value = ''; // Clear the input field after sending
+        }
+    }
+
+
     window.addEventListener("showCallNotification", showCallNotification);
     document.getElementById('video-call-btn').onclick = makeVideoCall;
     document.getElementById('audio-call-btn').onclick = makeAudioCall;
     document.getElementById('hangup-btn').onclick = hangupCall;
     document.getElementById('answer-btn').onclick = answerCall;
     document.getElementById('decline-btn').onclick = declineCall;
+    
+    
+    document.getElementById('send-btn').onclick = sendMessage;
 
 })
 

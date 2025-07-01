@@ -1,29 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="blackgreen">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%2210 0 100 100%22><text y=%22.90em%22 font-size=%2290%22>🙃</text></svg>"></link>
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  </link>
   <title>PeerJS Video Chat</title>
-  <link rel="stylesheet" href="style.css">
   
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="./css/index.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="./libs/peerjs.min.js"></script>
   
 </head>
 
 <body>
+  <div class="hero bg-base-200 min-h-screen">
+    <div class="hero-content text-center">
+      <div class="max-w-md">
+        <h1 class="text-5xl font-bold">Hello there</h1>
+        <p class="py-6">
+          Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem
+          quasi. In deleniti eaque aut repudiandae et a id nisi.
+        </p>
+        <button class="btn btn-primary">Get Started</button>
+      </div>
+    </div>
+  </div>
   <h1>PeerJS Video Chat</h1>
   <div>
     <label>from: </label>
-    <input id="from" value="" >
+    <input id="from" value="">
   </div>
   <div>
     <label>to:</label>
-    <input id="to" value="" >
-    <button id="video-call-btn">Video Call</button>
-    <button id="audio-call-btn">Audio Call</button>
-    <button id="hangup-btn">hangup</button>
+    <input id="to" value="">
+    <button id="video-call-btn" class="btn btn-primary">Video Call</button>
+    <button id="audio-call-btn" class="btn btn-primary">Audio Call</button>
+    <button id="hangup-btn" class="btn btn-error">hangup</button>
   </div>
   <div id="videos">
     <video id="local-video" muted autoplay playsinline></video>
@@ -32,25 +47,65 @@
   <!-- Add this to your index.html -->
   <div id="incoming-call" class="hidden">
     <p>📞 Incoming call from <span id="caller-id"></span></p>
-    <button id="answer-btn">Answer</button>
-    <button id="decline-btn">Decline</button>
+    <button id="answer-btn" class="btn btn-success">Answer</button>
+    <button id="decline-btn" class="btn btn-error">Decline</button>
   </div>
 
 
-  <input type="file" id="file-input" />
-  <button id="send-btn"> send file </button>
+  <div id="chat">
+    <h2>Chat</h2>
+    <div id="chatbox">
+      <div id="messages"></div>
+      <div id="files"></div>
+
+    </div>
+  </div>
+  <!-- <input type="text" id="message-input" placeholder="Type your message here..." /> -->
+  <label class="floating-label">
+    <span>Your Message</span>
+    <input type="text" id="message-input" placeholder="Type your message here..." class="input input-md" />
+
+    <button id="send-btn" class="btn btn-info">
+      <img src="./icons/send-message.svg" alt="Send Message" class="icon" />
+    </button>
+  </label>
+
+  <input type="file" id="file-input" class="file-input" />
+  <button id="send-btn" class="btn btn-warning">
+    <img src="./icons/send-files.svg" alt="Send Files" class="icon" />
+  </button>
+
   <div id="status"></div>
   <div id="download-link"></div>
 
-  
-<!-- <script src="main.js"></script> -->
+  <footer class="footer sm:footer-horizontal bg-neutral text-neutral-content p-10">
+    <nav>
+      <h6 class="footer-title">Services</h6>
+      <a class="link link-hover">Branding</a>
+      <a class="link link-hover">Design</a>
+      <a class="link link-hover">Marketing</a>
+      <a class="link link-hover">Advertisement</a>
+    </nav>
+    <nav>
+      <h6 class="footer-title">Company</h6>
+      <a class="link link-hover">About us</a>
+      <a class="link link-hover">Contact</a>
+      <a class="link link-hover">Jobs</a>
+      <a class="link link-hover">Press kit</a>
+    </nav>
+    <nav>
+      <h6 class="footer-title">Legal</h6>
+      <a class="link link-hover">Terms of use</a>
+      <a class="link link-hover">Privacy policy</a>
+      <a class="link link-hover">Cookie policy</a>
+    </nav>
+  </footer>
+  <!-- <script src="main.js"></script> -->
 
-<script src="util.js"></script>
-<script src="wrapper.js"></script>
-<!-- <script src="common.js"></script>
-<script src="receiver.js"></script>
-<script src="sender.js"></script> -->
-<script src="index.js"></script>
+  <script src="util.js"></script>
+  <script src="wrapper.js"></script>
+
+  <script src="index.js"></script>
 
 </body>
 
