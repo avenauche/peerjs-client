@@ -50,6 +50,45 @@ const User = (function () {
             document.getElementById("from").setAttribute("value", id);
             document.getElementById('status').innerText = 'Connected as ' + id;
 
+
+            if (to) {
+                console.log("Trying to connect to peer:", to);
+                dataConnection = peer.connect(to);
+
+                dataConnection.on('open', function () {
+                    console.log("DataConnection to", to, "opened!");
+                });
+
+                dataConnection.on('data', function (data) {
+                    receiveFiles(data);
+                });
+
+                dataConnection.on('close', function () {
+                    console.log("DataConnection to", to, "closed");
+                    dataConnection = null;
+                });
+            }
+
+
+            peer.on('connection', function (conn) {
+                console.log("Received DataConnection from:", conn.peer);
+                dataConnection = conn;
+
+                conn.on('data', function (data) {
+                    receiveFiles(data);
+                });
+
+                conn.on('open', function () {
+                    console.log("DataConnection opened!");
+                });
+
+                conn.on('close', function () {
+                    console.log("DataConnection closed");
+                    dataConnection = null;
+                });
+            });
+
+
             const conn = peer.connect(to);
             // Only assign dataConnection and allow sending after open
             conn.on('open', function () {
@@ -155,10 +194,10 @@ const User = (function () {
         const msgObj = { type: 'message', from: from, to: to, content: message };
 
         const chatWindow = document.getElementById('messages');
-            const messageElement = document.createElement('div');
-            messageElement.className = 'chat chat-end';
-            messageElement.id = 'message-' + Date.now(); // Unique ID for the message element
-            messageElement.innerHTML = `
+        const messageElement = document.createElement('div');
+        messageElement.className = 'chat chat-end';
+        messageElement.id = 'message-' + Date.now(); // Unique ID for the message element
+        messageElement.innerHTML = `
                 <div class="chat-image avatar">
                     <div class="w-10 rounded-full">
                     <img
@@ -170,15 +209,15 @@ const User = (function () {
                 <div class="chat-header">
                     ${to}
                     <time class="text-xs opacity-50">${(() => {
-                    const now = new Date();
-                    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return timeString;
-                })()}</time>
+                const now = new Date();
+                const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                return timeString;
+            })()}</time>
                 </div>
                 <div class="chat-bubble">${message}</div>
                 <div class="chat-footer opacity-50">Seen at 12:46</div>
             `;
-            chatWindow.appendChild(messageElement);
+        chatWindow.appendChild(messageElement);
 
 
         if (!dataConnection || !dataConnection.open) {
@@ -254,8 +293,44 @@ const User = (function () {
 
     }
 
-    function sendFiles() { }
-    function receiveFiles() { }
+    function sendFiles(file) {
+        if (!dataConnection || dataConnection.open === false) {
+            console.error("No open DataConnection!");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const arrayBuffer = reader.result;
+
+            const payload = {
+                fileName: file.name,
+                fileType: file.type,
+                fileData: arrayBuffer
+            };
+
+            dataConnection.send(payload);
+            console.log("File sent:", file.name);
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
+    function receiveFiles(data) {
+        console.log("Received file:", data);
+
+        const blob = new Blob([data.fileData], { type: data.fileType });
+
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = data.fileName;
+        downloadLink.textContent = `Download ${data.fileName}`;
+        downloadLink.style.display = 'block';
+
+        document.getElementById('download-link').appendChild(downloadLink);
+    }
 
     // return {
     //     from,
