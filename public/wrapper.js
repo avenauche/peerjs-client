@@ -5,6 +5,8 @@ const User = (function () {
     let localVideoId = null;
     let remoteVideoId = null;
 
+    let dataConnection = null;
+
     const searchParams = new URLSearchParams(window.location.search);
     let from = searchParams.has("from") ? searchParams.get('from') : "";
     let to = searchParams.has("to") ? searchParams.get('to') : "";
@@ -46,6 +48,43 @@ const User = (function () {
             console.log('My peer ID is: ' + id);
             document.getElementById("from").setAttribute("value", id);
             document.getElementById('status').innerText = 'Connected as ' + id;
+
+            // Connect *only after open*
+            if (to) {
+                console.log("Trying to connect to peer:", to);
+                dataConnection = peer.connect(to);
+
+                dataConnection.on('open', function () {
+                    console.log("DataConnection to", to, "opened!");
+                });
+
+                dataConnection.on('data', function (data) {
+                    receiveFiles(data);
+                });
+
+                dataConnection.on('close', function () {
+                    console.log("DataConnection to", to, "closed");
+                    dataConnection = null;
+                });
+            }
+        });
+
+        peer.on('connection', function (conn) {
+            console.log("Received DataConnection from:", conn.peer);
+            dataConnection = conn;
+
+            conn.on('data', function (data) {
+                receiveFiles(data);
+            });
+
+            conn.on('open', function () {
+                console.log("DataConnection opened!");
+            });
+
+            conn.on('close', function () {
+                console.log("DataConnection closed");
+                dataConnection = null;
+            });
         });
 
         peer.on('call', function (call) {
@@ -100,8 +139,44 @@ const User = (function () {
     function sendMessage() { }
     function receiveMessage() { }
 
-    function sendFiles() { }
-    function receiveFiles() { }
+    function sendFiles(file) {
+        if (!dataConnection || dataConnection.open === false) {
+            console.error("No open DataConnection!");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function () {
+            const arrayBuffer = reader.result;
+
+            const payload = {
+                fileName: file.name,
+                fileType: file.type,
+                fileData: arrayBuffer
+            };
+
+            dataConnection.send(payload);
+            console.log("File sent:", file.name);
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
+    function receiveFiles(data) {
+        console.log("Received file:", data);
+
+        const blob = new Blob([data.fileData], { type: data.fileType });
+
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = data.fileName;
+        downloadLink.textContent = `Download ${data.fileName}`;
+        downloadLink.style.display = 'block';
+
+        document.getElementById('download-link').appendChild(downloadLink);
+    }
 
     // return {
     //     from,
