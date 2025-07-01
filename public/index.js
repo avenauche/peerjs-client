@@ -81,6 +81,16 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
+    function sendFile() {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput.files[0];
+        if (file) {
+            User.sendFiles(file);
+        } else {
+            console.warn("No file selected");
+        }
+    }
+
     window.addEventListener("showCallNotification", showCallNotification);
     document.getElementById('video-call-btn').onclick = makeVideoCall;
     document.getElementById('audio-call-btn').onclick = makeAudioCall;
@@ -89,7 +99,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     document.getElementById('decline-btn').onclick = declineCall;
     
     
-    document.getElementById('send-btn').onclick = sendMessage;
+    document.getElementById('send-message-btn').onclick = sendMessage;
+    document.getElementById('send-file-btn').onclick = sendFile;
 
 })
 
