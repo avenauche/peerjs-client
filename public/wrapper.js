@@ -57,10 +57,27 @@ const User = (function () {
 
                 dataConnection.on('open', function () {
                     console.log("DataConnection to", to, "opened!");
+
+                    console.log('Data connection established with ' + to);
+
+                    dataConnection.on('error', function (err) {
+                        console.error('Connection error:', err);
+                    });
+
+                    while (messageQueue.length > 0) {
+                        const msg = messageQueue.shift();
+                        dataConnection.send(msg);
+                        console.log('Queued message sent:', msg);
+                    }
                 });
 
                 dataConnection.on('data', function (data) {
-                    receiveFiles(data);
+                    console.log('Data received (incoming):', data);
+                    if(data.type === 'message') {
+                        receiveMessage(data);
+                    } else {
+                        receiveFiles(data);
+                    }
                 });
 
                 dataConnection.on('close', function () {
@@ -74,63 +91,27 @@ const User = (function () {
                 console.log("Received DataConnection from:", conn.peer);
                 dataConnection = conn;
 
-                conn.on('data', function (data) {
-                    receiveFiles(data);
-                });
-
                 conn.on('open', function () {
                     console.log("DataConnection opened!");
+                });
+
+                conn.on('data', function (data) {
+                    console.log('Data received (incoming):', data);
+                    if (data.type === 'message') {
+                        receiveMessage(data);
+                    } else {
+                        receiveFiles(data);
+                    } 
                 });
 
                 conn.on('close', function () {
                     console.log("DataConnection closed");
                     dataConnection = null;
                 });
-            });
 
-
-            const conn = peer.connect(to);
-            // Only assign dataConnection and allow sending after open
-            conn.on('open', function () {
-                console.log('Data connection established with ' + to);
-                dataConnection = conn;
-                // Attach data and error handlers once
-                // dataConnection.on('data', function (data) {
-                //     console.log('Data received:', data);
-                //     // if (data.type === 'message') {
-                //     //     console.log('Message received:', data.content);
-                //     //     // Handle the received message (e.g., display it in the UI)
-                //     // }
-                // });
-                dataConnection.on('error', function (err) {
-                    console.error('Connection error:', err);
+                conn.on('error', function (err) {
+                    console.error('Connection error (incoming):', err);
                 });
-                // Send any queued messages
-                while (messageQueue.length > 0) {
-                    const msg = messageQueue.shift();
-                    dataConnection.send(msg);
-                    console.log('Queued message sent:', msg);
-                }
-            });
-
-            // Handle incoming data connections
-            peer.on('connection', function (conn) {
-                dataConnection = conn;
-                dataConnection.on('data', function (data) {
-                    console.log('Data received (incoming connection):', data);
-                    if (data.type === 'message') {
-                        console.log('Message received:', data.content);
-                        // Handle the received message (e.g., display it in the UI)
-                        receiveMessage(data);
-                    }
-                });
-                dataConnection.on('error', function (err) {
-                    console.error('Connection error:', err);
-                });
-            });
-
-            conn.on('error', function (err) {
-                console.error('Connection error:', err);
             });
         });
 
@@ -193,6 +174,14 @@ const User = (function () {
     function sendMessage(message) {
         const msgObj = { type: 'message', from: from, to: to, content: message };
 
+        if (!dataConnection || !dataConnection.open) {
+            console.warn('No open data connection, queuing message');
+            messageQueue.push(msgObj);
+            return;
+        }
+        dataConnection.send(msgObj);
+        console.log('Message sent:', message);
+
         const chatWindow = document.getElementById('messages');
         const messageElement = document.createElement('div');
         messageElement.className = 'chat chat-end';
@@ -220,18 +209,19 @@ const User = (function () {
         chatWindow.appendChild(messageElement);
 
 
-        if (!dataConnection || !dataConnection.open) {
-            console.warn('No open data connection, queuing message');
-            messageQueue.push(msgObj);
-            return;
-        }
-        dataConnection.send(msgObj);
-        console.log('Message sent:', message);
+        // if (!dataConnection || !dataConnection.open) {
+        //     console.warn('No open data connection, queuing message');
+        //     messageQueue.push(msgObj);
+        //     return;
+        // }
+        // dataConnection.send(msgObj);
+        // console.log('Message sent:', message);
 
     }
 
     // receiveMessage is now handled automatically when the data connection opens.
     function receiveMessage(data) {
+        console.log("data --> :",data);
         // No-op: handler is attached when data connection opens.
         if (data.to === from) {
             console.log('Message received:', data.content);
@@ -263,33 +253,34 @@ const User = (function () {
                     <div class="chat-footer opacity-50">Delivered</div>
                 `;
             chatWindow.appendChild(messageElement);
-        } else {
-            const chatWindow = document.getElementById('messages');
-            const messageElement = document.createElement('div');
-            messageElement.className = 'chat chat-end';
-            messageElement.id = 'message-' + Date.now(); // Unique ID for the message element
-            messageElement.innerHTML = `
-                <div class="chat-image avatar">
-                    <div class="w-10 rounded-full">
-                    <img
-                        alt="Tailwind CSS chat bubble component"
-                        src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp"
-                    />
-                    </div>
-                </div>
-                <div class="chat-header">
-                    ${to}
-                    <time class="text-xs opacity-50">${(() => {
-                    const now = new Date();
-                    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    return timeString;
-                })()}</time>
-                </div>
-                <div class="chat-bubble">${data.content}</div>
-                <div class="chat-footer opacity-50">Seen at 12:46</div>
-            `;
-            chatWindow.appendChild(messageElement);
-        }
+        } else { console.log("msg did not came to me. ignoring"); return }
+        //  else {
+        //     const chatWindow = document.getElementById('messages');
+        //     const messageElement = document.createElement('div');
+        //     messageElement.className = 'chat chat-end';
+        //     messageElement.id = 'message-' + Date.now(); // Unique ID for the message element
+        //     messageElement.innerHTML = `
+        //         <div class="chat-image avatar">
+        //             <div class="w-10 rounded-full">
+        //             <img
+        //                 alt="Tailwind CSS chat bubble component"
+        //                 src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp"
+        //             />
+        //             </div>
+        //         </div>
+        //         <div class="chat-header">
+        //             ${to}
+        //             <time class="text-xs opacity-50">${(() => {
+        //             const now = new Date();
+        //             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        //             return timeString;
+        //         })()}</time>
+        //         </div>
+        //         <div class="chat-bubble">${data.content}</div>
+        //         <div class="chat-footer opacity-50">Seen at 12:46</div>
+        //     `;
+        //     chatWindow.appendChild(messageElement);
+        // }
 
     }
 
@@ -305,9 +296,9 @@ const User = (function () {
             const arrayBuffer = reader.result;
 
             const payload = {
-                fileName: file.name,
-                fileType: file.type,
-                fileData: arrayBuffer
+                name: file.name,
+                type: file.type,
+                data: arrayBuffer
             };
 
             dataConnection.send(payload);
@@ -320,13 +311,13 @@ const User = (function () {
     function receiveFiles(data) {
         console.log("Received file:", data);
 
-        const blob = new Blob([data.fileData], { type: data.fileType });
+        const blob = new Blob([data.data], { type: data.type });
 
         const url = URL.createObjectURL(blob);
         const downloadLink = document.createElement('a');
         downloadLink.href = url;
-        downloadLink.download = data.fileName;
-        downloadLink.textContent = `Download ${data.fileName}`;
+        downloadLink.download = data.name;
+        downloadLink.textContent = `Download ${data.name}`;
         downloadLink.style.display = 'block';
 
         document.getElementById('download-link').appendChild(downloadLink);
