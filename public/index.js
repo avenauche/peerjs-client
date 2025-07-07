@@ -81,14 +81,44 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
 
-    function sendFile() {
+    async function sendFile() {
         const file = document.getElementById('file-input').files[0];
-
-        if (file) {
-            User.sendFiles(file);
-        } else {
+        const passphrase = document.getElementById('passphrase-input').value;
+        if (!file) {
             console.warn("No file selected");
+            return;
         }
+        if (!passphrase) {
+            alert("Passphrase is required for file encryption and JWT.");
+            return;
+        }
+        // Derive JWT secret from passphrase using PBKDF2 (same salt as file key, or a new one)
+        // We'll use a fixed salt for JWT key derivation for demo, but in production use a user/session-specific salt
+        const enc = new TextEncoder();
+        const jwtSalt = enc.encode('jwt-static-salt'); // Use a static salt for JWT key derivation (for demo only)
+        const jwtKey = await window.crypto.subtle.importKey(
+            "raw",
+            enc.encode(passphrase),
+            { name: "PBKDF2" },
+            false,
+            ["deriveBits", "deriveKey"]
+        );
+        const derivedJwtKey = await window.crypto.subtle.deriveKey(
+            {
+                name: "PBKDF2",
+                salt: jwtSalt,
+                iterations: 100000,
+                hash: "SHA-512"
+            },
+            jwtKey,
+            { name: "HMAC", hash: "SHA-512", length: 512 },
+            true,
+            ["sign", "verify"]
+        );
+        // Export the derived key as a string for use in wrapper.js
+        const rawJwtKey = await window.crypto.subtle.exportKey("raw", derivedJwtKey);
+        const jwtSecret = Array.from(new Uint8Array(rawJwtKey)).map(b => String.fromCharCode(b)).join("");
+        User.sendFiles(file, passphrase, jwtSecret);
     }
 
     window.addEventListener("showCallNotification", showCallNotification);
