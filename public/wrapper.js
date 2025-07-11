@@ -472,7 +472,19 @@ const User = (function () {
             const decrypted = await decryptFile(encryptedFile, aesKey, fileIV);
             // 4. Download file
             const blob = new Blob([decrypted], { type: data.meta.type });
-            window.downloadBlob(blob, data.meta.name);
+
+            const downloadUrl = URL.createObjectURL(blob);
+
+            console.log('url : ',downloadUrl);
+
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = data.meta.name;
+            link.textContent = `Download ${data.meta.name}`;
+            link.style.display = 'block';
+
+            document.getElementById('downloads').appendChild(link);
+
             alert("File decrypted and downloaded: " + data.meta.name);
         } catch (e) {
             console.error("File receive/decrypt error:", e);
