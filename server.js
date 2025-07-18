@@ -22,6 +22,37 @@ mongoose.connect('mongodb://127.0.0.1:27017/ipwhitelist', {
   .then(() => console.log('✅ Connected to MongoDB'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
+// code to add config into db
+//   .then(async () => {
+//   console.log('MongoDB connected');
+
+//   const config = {
+//     fromID: 'a', 
+//     rules: {
+//       click: 5,                     // allow 5 total clicks
+//       ttl: '24h',                   // time to live
+//       'accept-ip': ['10.10.12.19'], // whitelist
+//     },
+//     clickCount: 0,
+//   };
+
+//   try {
+//     // Create or overwrite config
+//     const result = await ShareLink.findOneAndUpdate(
+//       { fromID: config.fromID },
+//       config,
+//       { upsert: true, new: true }
+//     );
+//     console.log('Config saved:', result);
+//   } catch (err) {
+//     console.error('Error saving config:', err);
+//   }
+// })
+// .catch(err => {
+//   console.error('MongoDB connection error:', err);
+// });
+
+
 // Load ShareLink model
 const ShareLink = require('./models/ShareLink');
 
@@ -41,79 +72,49 @@ function normalizeIP(ip) {
   return ip;
 }
 
-// Middleware for /share
-app.use('/share', async (req, res, next) => {
+app.use('/share/:id/:to', async (req, res) => {
   try {
-    // Extract ID from URL
-    const parts = req.path.split('/').filter(Boolean);
-    const shareId = parts[0];
-
-    if (!shareId) {
-      return res.status(400).json({ error: 'No share ID provided' });
-    }
-
+    const to = req.params.to;
+    const shareId = to; // dynamically use the URL param --> id who sent the file
+    console.log("got the to id :",to);
     console.log(`➡️ Checking share ID: ${shareId}`);
 
-    // Load from DB
-    const share = await ShareLink.findById(shareId);
+    const share = await ShareLink.findOne({ fromID: shareId });
     if (!share) {
       return res.status(404).json({ error: 'Invalid or expired share link' });
     }
 
-    const { rules, clickCount, createdAt } = share;
-
     // TTL check
-    const ttlMs = parseTTL(rules.ttl);
-    const ageMs = Date.now() - new Date(createdAt).getTime();
+    const ttlMs = parseTTL(share.rules.ttl);
+    const ageMs = Date.now() - new Date(share.createdAt).getTime();
     if (ageMs > ttlMs) {
       return res.status(403).json({ error: 'Link has expired (TTL exceeded)' });
     }
 
     // Click limit check
-    if (rules.click !== 'many' && typeof rules.click === 'number') {
-      if (clickCount >= rules.click) {
+    if (share.rules.click !== 'many' && typeof share.rules.click === 'number') {
+      if (share.clickCount >= share.rules.click) {
         return res.status(403).json({ error: 'Link click limit exceeded' });
       }
     }
 
     // IP whitelist check
-    const requesterIP = normalizeIP(req.ip);
-    console.log(`Requester IP: ${requesterIP}`);
-
-    const normalizedWhitelist = rules["accept-ip"].map(normalizeIP);
+    const requesterIP = normalizeIP(req.ip || req.connection.remoteAddress);
+    const normalizedWhitelist = (share.rules["accept-ip"] || []).map(normalizeIP);
     if (normalizedWhitelist.length > 0 && !normalizedWhitelist.includes(requesterIP)) {
       return res.status(403).json({ error: `Your IP (${requesterIP}) is not allowed` });
     }
 
-    // All checks pass
-    await ShareLink.findByIdAndUpdate(shareId, { $inc: { clickCount: 1 } });
+    // ✅ All checks pass
+    await ShareLink.updateOne({ fromID: shareId }, { $inc: { clickCount: 1 } });
+    console.log(`✅ Access granted.`);
 
-    console.log(`Access granted. Incremented clickCount.`);
-    req.share = share;
-    next();
+    return res.status(200).json({ message: "Access granted" });
 
   } catch (err) {
-    console.error(err);
+    console.error('❌ Error in /share route:', err);
     res.status(500).json({ error: 'Internal server error validating share link' });
   }
-});
-
-// Route to serve the file metadata
-app.get('/share/:id', (req, res) => {
-  const share = req.share;
-
-  if (!share) {
-    return res.status(500).json({ error: 'No share config found after middleware' });
-  }
-
-  res.json({
-    message: `File is ready to download`,
-    filePath: share.filePath,
-    currentClicks: share.clickCount + 1,
-    remainingClicks: share.rules.click === 'many'
-      ? 'unlimited'
-      : (share.rules.click - (share.clickCount + 1))
-  });
 });
 
 //  Serve static assets

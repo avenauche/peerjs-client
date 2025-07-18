@@ -470,22 +470,86 @@ const User = (function () {
                 throw new Error("Unsupported encrypted file data type");
             }
             const decrypted = await decryptFile(encryptedFile, aesKey, fileIV);
-            // 4. Download file
+            // // 4. Download file
+            // const blob = new Blob([decrypted], { type: data.meta.type });
+            // const downloadUrl = URL.createObjectURL(blob);
+            // console.log('url : ',downloadUrl);
+            // const link = document.createElement('a');
+            // link.href = downloadUrl;
+            // link.download = data.meta.name;
+            // link.textContent = `Download ${data.meta.name}`;
+            // link.style.display = 'block';
+            // document.getElementById('downloads').appendChild(link);
+            // alert("File decrypted and downloaded: " + data.meta.name);
+
+            // Step 1: Create blobId and set cookie (for backend verification if needed)
             const blob = new Blob([decrypted], { type: data.meta.type });
+            const blobUrl = URL.createObjectURL(blob);
+            console.log("✅ Blob URL created:", blobUrl);
 
-            const downloadUrl = URL.createObjectURL(blob);
+            // Use only for frontend-side ID, not for backend fetch
+            const blobId = blobUrl.split('/').pop();
 
-            console.log('url : ',downloadUrl);
+            const currentUrl = window.location.href;
+            const To = currentUrl.split('&').pop();
+            console.log("from and to id : ", To);
 
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = data.meta.name;
-            link.textContent = `Download ${data.meta.name}`;
-            link.style.display = 'block';
+            const toId = currentUrl.split('=').pop();
+            console.log(toId);
 
-            document.getElementById('downloads').appendChild(link);
+            // Create a share path that will trigger validation
+            const customSharePath = `${window.location.origin}/share/${blobId}/${toId}`;
+            console.log('custom url : ',customSharePath);
 
-            alert("File decrypted and downloaded: " + data.meta.name);
+            // Step 2: Create a link element
+            const a = document.createElement("a");
+            a.href = `${customSharePath}`; // Don't navigate immediately
+            a.target = '_blank';
+            a.textContent = `Download ${data.meta.name}`;
+            a.style.cursor = "pointer";
+            a.style.color = "blue";
+            a.style.textDecoration = "underline";
+
+            // Step 3: Add onclick handler for validating access and downloading
+            a.onclick = async (e) => {
+                e.preventDefault();
+
+                try {
+                    const res = await fetch(`/share/${blobId}/${toId}`);
+                    if (!res.ok) {
+                        const error = await res.json();
+                        alert("❌ " + (error.error || "Access denied"));
+                        return;
+                    }
+
+                    const result = await res.json();
+                    if (result.message === "Access granted") {
+                        console.log("🔐 Access granted, reconstructing blob...");
+
+                        // Recreate blob and download
+                        const finalBlob = new Blob([decrypted], { type: data.meta.type });
+                        const downloadUrl = URL.createObjectURL(finalBlob);
+
+                        // Trigger download
+                        const temp = document.createElement("a");
+                        temp.href = downloadUrl;
+                        temp.download = data.meta.name;
+                        temp.style.display = "none";
+                        document.body.appendChild(temp);
+                        temp.click();
+                        document.body.removeChild(temp);
+
+                    } else {
+                        alert("Unexpected response: " + result.message);
+                    }
+                } catch (err) {
+                    console.error("❌ Error in share fetch:", err);
+                    alert("Something went wrong. Try again.");
+                }
+            };
+
+            document.getElementById("downloads").appendChild(a);
+
         } catch (e) {
             console.error("File receive/decrypt error:", e);
             alert("Failed to decrypt or verify file: " + (e && e.message ? e.message : e));
