@@ -1,0 +1,11 @@
+<h2>Scan this QR Code to Login</h2>
+<p><strong>User:</strong>
+    <%= username %>
+</p>
+<img src="<%= qrCodeDataURL %>" alt="Login QR Code" />
+
+<form method="POST" action="/verify-login">
+    <input type="hidden" name="username" value="<%= username %>">
+    <input type="text" name="token" placeholder="Enter OTP" required />
+    <button type="submit">Verify OTP</button>
+</form>

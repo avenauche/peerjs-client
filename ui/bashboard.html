@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Ready Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700">
+  <style>
+    body {
+      background-color: #f3f6fb;
+      font-family: 'Roboto', sans-serif;
+    }
+    .sidebar {
+      width: 230px;
+      background: #fff;
+      position: fixed;
+      height: 100%;
+      left: 0;
+      top: 0;
+      border-right: 1px solid #f0f0f0;
+      padding: 1rem 0;
+      z-index: 1030;
+    }
+    .sidebar .profile {
+      text-align: left;
+      padding: 0 1rem 1rem 1.2rem;
+      border-bottom: 1px solid #ededed;
+      margin-bottom: 1.2rem;
+    }
+    .sidebar .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+    }
+    .sidebar .profile .admin-label {
+      font-size: 0.92em;
+      color: #6c757d;
+    }
+    .sidebar nav {
+      padding-left: 0.5rem;
+    }
+    .sidebar .nav-link {
+      color: #999;
+      font-size: 1.06em;
+      margin: 0.15rem 0;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      transition: 0.2s;
+    }
+    .sidebar .nav-link.active {
+      color: #305bef;
+      background: linear-gradient(90deg, #f0f4fe 0%, rgba(245,248,252,0) 100%);
+      font-weight: 500;
+      border-left: 3px solid #305bef;
+    }
+    .sidebar .nav-link i {
+      margin-right: 0.7em;
+    }
+    .main {
+      margin-left: 230px;
+      min-height: 100vh;
+    }
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #ececec;
+      padding: 0.5rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .search-box {
+      width: 340px;
+    }
+    .settings-header {
+      margin: 2.5rem 0 1.2rem 0;
+      font-size: 2rem;
+      color: #545454;
+      font-weight: 500;
+      text-align: center;
+      font-family: 'Poppins', sans-serif;
+    }
+    .settings-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 6px 30px 0 rgba(56,65,74,0.1);
+      padding: 2rem 2.5rem 2rem 2.5rem;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .settings-card label {
+      font-size: 1em;
+      margin-bottom: 0.4rem;
+      color: #6c757d;
+    }
+    .settings-card .form-select,
+    .settings-card input[type="text"] {
+      border-radius: 6px;
+    }
+    .settings-card .ip-fields input {
+      width: 55px;
+      display: inline-block;
+      text-align: center;
+      margin-right: 4px;
+    }
+    .settings-card .ip-fields input:last-child {
+      margin-right: 0;
+    }
+    .settings-card .btn-success {
+      background: #5cd77b;
+      border: none;
+      width: 120px;
+    }
+    .settings-card .btn-success:hover {
+      background: #48b363;
+    }
+    .footer {
+      background: #fff;
+      border-top: 1px solid #eee;
+      color: #636c72;
+      font-size: 0.97em;
+      padding: 0.9rem 0;
+      width: 100%;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      margin-left: 0;
+      z-index: 1040;
+    }
+    /* Responsive */
+    @media (max-width: 992px) {
+      .sidebar {
+        width: 100vw;
+        position: relative;
+        height: auto;
+      }
+      .main {
+        margin-left: 0;
+        padding-top: 60px;
+      }
+      .footer {
+        position: relative;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="mb-1 ms-3 mb-4 fw-bold fs-5">Ready Dashboard</div>
+    <div class="profile d-flex align-items-center">
+      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar">
+      <div>
+        <div class="fw-semibold">sabarivasan</div>
+        <div class="admin-label">Administrator <i class="bi bi-chevron-down small"></i></div>
+      </div>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link" href="#"><i class="bi bi-graph-up"></i> Analytics</a>
+      <a class="nav-link active" href="#"><i class="bi bi-gear"></i> Settings</a>
+    </nav>
+  </div>
+  <div class="main">
+    <div class="topbar d-flex align-items-center">
+      <div class="d-flex align-items-center gap-3">
+        <form class="search-box position-relative">
+          <input class="form-control rounded-pill ps-4" type="search" placeholder="Search ..." aria-label="Search">
+          <span class="position-absolute top-50 translate-middle-y start-0 ms-2 text-muted">
+            <i class="bi bi-search"></i>
+          </span>
+        </form>
+      </div>
+      <div class="d-flex align-items-center gap-4">
+        <a href="#" class="me-2 position-relative">
+          <i class="bi bi-envelope"></i>
+        </a>
+        <a href="#" class="me-2 position-relative">
+          <i class="bi bi-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.57em;">3</span>
+        </a>
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Avatar" width="36" height="36" class="rounded-circle object-fit-cover">
+        <span class="ms-2">sabarivasan</span>
+      </div>
+    </div>
+    <div class="settings-header">Settings</div>
+    <div class="settings-card">
+      <form>
+        <div class="mb-3">
+          <label for="clickOption">CLICK:</label>
+          <select class="form-select" id="clickOption">
+            <option selected>once</option>
+            <option>multiple</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label>Enter IP Address:</label>
+          <div class="ip-fields d-flex gap-2 align-items-center">
+            <input type="text" maxlength="3" class="form-control" placeholder="">
+            <span class="mx-1">.</span>
+            <input type="text" maxlength="3" class="form-control" placeholder="">
+            <span class="mx-1">.</span>
+            <input type="text" maxlength="3" class="form-control" placeholder="">
+            <span class="mx-1">.</span>
+            <input type="text" maxlength="3" class="form-control" placeholder="">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="ttl">TTL (min):</label>
+          <select class="form-select" id="ttl">
+            <option selected>1 min</option>
+            <option>5 min</option>
+            <option>10 min</option>
+          </select>
+        </div>
+        <div class="d-flex justify-content-center mt-4">
+          <button type="submit" class="btn btn-success">Save</button>
+        </div>
+      </form>
+    </div>
+    <div style="height:120px"></div>
+    <div class="footer">
+      <a href="#" style="color: #1787e0; text-decoration: none;">ThemeKita</a> | 
+      <a href="#" style="color: #1787e0; text-decoration: none;">Help</a> | 
+      <a href="#" style="color: #1787e0; text-decoration: none;">Licenses</a>
+      <span class="float-end me-4 d-none d-md-inline-block">2018, made with <span style="color: #f25b7d;">♥</span> by <a href="#" style="color: #1787e0;">ThemeKita</a></span>
+    </div>
+  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

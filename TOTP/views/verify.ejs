@@ -1,0 +1,11 @@
+<h2>Verify OTP - Step <%= step %>
+</h2>
+<% if (qrCodeDataURL) { %>
+    <p>Scan this QR in Google Authenticator,MICROSOFT AUTHENTICATOR OR AUTHY:</p>
+    <img src="<%= qrCodeDataURL %>" alt="QR Code" />
+    <% } %>
+        <form method="POST" action="<%= step === 1 ? '/verify-step1' : '/verify-step2' %>">
+            <input type="hidden" name="username" value="<%= username %>" />
+            <input type="text" name="token" placeholder="Enter OTP" required />
+            <button type="submit">Verify for step <%= step %></button>
+        </form>

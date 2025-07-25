@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Login - Burnabl</title>
+  <link rel="icon" href="assets/img/favicon.png" type="image/png" />
+
+  <!-- Google Fonts and FlexStart CSS -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/css/main.css" rel="stylesheet"> <!-- Link to updated dark theme CSS -->
+
+  <style>
+    body {
+      background-color: var(--background-color);
+      color: var(--default-color);
+    }
+
+    .form-control, .form-control:focus {
+      background-color: var(--surface-color);
+      color: var(--default-color);
+      border: 1px solid var(--default-color);
+    }
+
+
+    .form-control::placeholder {
+      color: rgba(224, 224, 224, 0.6);
+    }
+
+    .form-label {
+      color: var(--heading-color);
+    }
+
+    .input-group-text {
+      background-color: var(--surface-color);
+      color: var(--default-color);
+      border: 1px solid var(--default-color);
+    }
+
+    .text-primary {
+      color: var(--accent-color) !important;
+    }
+
+    .btn-primary {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+      color: var(--contrast-color);
+    }
+
+    .btn-primary:hover {
+      background-color: color-mix(in srgb, var(--accent-color), transparent 20%);
+      border-color: color-mix(in srgb, var(--accent-color), transparent 20%);
+    }
+
+    a {
+      color: var(--accent-color);
+    }
+
+    a:hover {
+      color: color-mix(in srgb, var(--accent-color), transparent 20%);
+    }
+  </style>
+</head>
+
+<body class="d-flex align-items-center justify-content-center vh-100">
+
+  <div class="login-img me-4 d-none d-md-block">
+    <img src="./assets/img/Tablet login-cuate.svg" alt="Login Illustration" height="600" width="750">
+  </div>
+
+  <div style="max-width: 400px; width: 100%;">
+    <div class="text-center mb-4">
+      <h3 class="fw-bold">Login to <span class="text-primary">Burnabl 🔥</span></h3>
+      <p class="small text-muted">Access your account and manage your goals</p>
+    </div>
+
+    <form>
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email Address</label>
+        <input type="email" class="form-control" id="email" placeholder="you@example.com" required />
+      </div>
+
+      <div class="mb-3 position-relative">
+        <label for="password" class="form-label fw-semibold">Password</label>
+        <div class="input-group">
+          <input type="password" class="form-control" id="password" placeholder="••••••••" required />
+          <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword()">
+            <i class="bi bi-eye" id="toggleIcon"></i>
+          </span>
+        </div>
+        <div class="text-end mt-3">
+          <a href="forgot-password.html" class="small text-decoration-none">Forgot password?</a>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">Login</button>
+    </form>
+
+    <div class="mt-3 text-center">
+      <p class="small">
+        Don’t have an account?
+        <a href="register.html" class="text-decoration-none">Register here</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById("password");
+      const toggleIcon = document.getElementById("toggleIcon");
+      const isHidden = passwordInput.type === "password";
+
+      passwordInput.type = isHidden ? "text" : "password";
+      toggleIcon.classList.toggle("bi-eye");
+      toggleIcon.classList.toggle("bi-eye-slash");
+    }
+  </script>
+</body>
+
+</html>

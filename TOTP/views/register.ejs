@@ -1,0 +1,11 @@
+<h2>Register</h2>
+<% if (error) { %>
+    <div style="color: red;">
+        <%= error %>
+    </div>
+    <% } %>
+
+<form method="POST" action="/register">
+    <input type="text" name="username" placeholder="Username" required />  
+    <button type="submit">Register</button>
+</form>
