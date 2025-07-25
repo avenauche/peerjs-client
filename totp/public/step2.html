@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Step 2 Verification</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🔐 Complete Registration</h2>
+  <form action="/verify" method="POST">
+    <input type="hidden" name="username" id="username" />
+    <input type="text" name="token" placeholder="Enter TOTP again" required />
+    <button type="submit">Complete</button>
+  </form>
+
+  <script>
+    document.getElementById('username').value = sessionStorage.getItem('username');
+  </script>
+</body>
+</html>

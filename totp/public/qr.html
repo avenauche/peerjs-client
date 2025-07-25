@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Scan the QR in your Authenticator App</h2>
+  <img id="qr" alt="QR Code" /><br><br>
+  <form action="/verify" method="POST">
+    <input type="hidden" name="username" id="username" />
+    <input type="text" name="token" placeholder="Enter 6-digit TOTP" required />
+    <button type="submit">Verify</button>
+  </form>
+
+  <script>
+    document.getElementById('username').value = sessionStorage.getItem('username');
+    document.getElementById('qr').src = sessionStorage.getItem('qrImage');
+  </script>
+</body>
+</html>

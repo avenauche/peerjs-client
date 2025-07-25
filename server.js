@@ -56,6 +56,16 @@ mongoose.connect('mongodb://127.0.0.1:27017/ipwhitelist', {
 // Load ShareLink model
 const ShareLink = require('./models/ShareLink');
 
+
+// Serve main public folder
+app.use('/', express.static(path.join(__dirname, 'public')));
+
+// Serve 2FA static site
+app.use('/totp', express.static(path.join(__dirname, 'totp', 'public')));
+
+// Serve FlexStart UI
+app.use('/ui', express.static(path.join(__dirname, 'ui')));
+
 // Utility functions
 function parseTTL(ttl) {
   if (!ttl) return Infinity;

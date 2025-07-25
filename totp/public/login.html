@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>🔑 Login with TOTP</h2>
+  <form action="/verify" method="POST">
+    <input type="hidden" name="username" id="username" />
+    <input type="text" name="token" placeholder="Enter your 6-digit TOTP" required />
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    document.getElementById('username').value = sessionStorage.getItem('username');
+  </script>
+</body>
+</html>
